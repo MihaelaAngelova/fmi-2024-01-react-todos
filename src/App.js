@@ -1,32 +1,57 @@
 import './App.css';
-import {Component} from 'react'
+import React, { Component } from 'react'
+import { TodoList } from './TodoList';
+import TodoInput from './TodoInput';
 
-class App extends Component{
-state = {
-  counter: 0,
-}
 
-componentDidMount() {
-  this.interval = setInterval(() => {
-    this.setState(state => ({counter: state.counter + 1}))
-  }, 1000)
-}
+class App extends Component {
 
-componentWillUnmount() {
-  clearInterval(this.interval)
-}
+  constructor(props) {
+    super(props);
+    this.state = {
+      todos: [
+        {id: 1, text: 'Learn ECMAScript', status:'active'},
+        {id: 2, text: 'Learn React', status:'active'},
+        {id: 3, text: 'Learn JSX', status:'active'},
+        {id: 4, text: 'Learn Redux', status:'active'},
+      ], 
+      todoText: '', 
+      filter: 'all'
+    };
+    this.handleTodoSubmit = this.handleTodoSubmit.bind(this);
+  }
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1>Hello React Class Components!</h1>
-          <h2>Counter: {this.state.counter}</h2>
-        </header>
+      <div className="container col-sm-8">
+        <h2>React Todo Demo</h2>
+        <TodoInput onCreateTodo={this.handleTodoSubmit} onError={()=>{}} />
+        <TodoList todos={this.state.todos} onChangeStatus={this.handleStatusChange} /> 
       </div>
     );
   }
+
+
+  handleTextChange = (e) => {
+    this.setState({todoText: e.target.value});
+  }
+
+  handleStatusChange = (todoId, status) => {
+    this.setState(prevState =>
+      ({
+        todos: prevState.todos.map(todo => (todo.id === todoId ? {...todo, status }: todo)) 
+      })
+    );
+  }
+
+  handleTodoSubmit(todo) {
+    this.setState(prevState => ({
+      todoText: '',
+      todos: [
+        ...prevState.todos,
+        todo
+      ]
+    }))
+  }
   
 }
-
-export default App;
